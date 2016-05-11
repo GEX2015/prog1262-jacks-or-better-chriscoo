@@ -1,19 +1,13 @@
 #include "Card.h"
 #include "Deck.h"
 #include "Hand.h"
+#include "VideoPoker.h"
 #include <vector>
 #include <iostream>
-#include "VideoPoker.h"
 
 
 
-bool operator!=(const Card& l, const Card& r)
-{
-	if (!(l == r))
-		return true;
-	else
-		return false;
-};
+
 
 int main() {
 	
@@ -21,11 +15,10 @@ int main() {
 	
 	VideoPoker test;
 
+	test.play();
 
 
-	test.payTable();
-	test.welcome();
-
+	
 	//hand1.addCard(std::make_shared<Card>(Card(Face::ACE, Suit::CLUB)));
 	//hand1.addCard(std::make_shared<Card>(Card(Face::TWO, Suit::CLUB)));
 	//hand1.addCard(std::make_shared<Card>(Card(Face::THREE, Suit::CLUB)));
@@ -65,5 +58,5 @@ int main() {
 	//std::cout << hand1.sizeofHand() << std::endl;
 	//
 	//deck.shuffle();
-	system("pause");
+
 }

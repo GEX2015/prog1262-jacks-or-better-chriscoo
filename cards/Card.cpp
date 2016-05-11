@@ -33,6 +33,14 @@ const std::map<Suit, std::string> Card::SuitNames{
 
 
 
+void Card::swap(Card l, Card r)
+{
+	Card tmp;
+	tmp = l;
+	l = r;
+	r = tmp;
+}
+
 std::string Card::toString() const
 {
 	return Card::faceNames.at(face) + " in " + Card::SuitNames.at(suit);
@@ -47,3 +55,4 @@ bool operator<(const Card& l, const Card& r)
 	else
 		return false;
 };
+

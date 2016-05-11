@@ -35,7 +35,7 @@ struct Card
 		return os;
 	}
 
-	
+	void swap(Card l, Card r);
 
 	friend bool operator==(const Card& l, const Card&r)
 	{
@@ -45,8 +45,17 @@ struct Card
 			return false;
 	};
 
+	friend bool operator!=(const Card& l, const Card& r)
+	{
+		if (l.face == r.face && l.suit == r.suit)
+			return true;
+		else
+			return false;
+	};
+
 	std::string toString() const;
 };
 
 bool operator<(const Card& l, const Card& r);
+
 
