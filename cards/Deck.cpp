@@ -1,9 +1,14 @@
+//
+//  Created by Chris Arsenault on 2016-05-13.
+//  Copyright © 2016 Chris Arsenault. All rights reserved.
+//
+
 #include "Deck.h"
 #include <ctime>
 #include <cstdlib>
 #include <algorithm>
 
-Deck::Deck()
+Deck::Deck() //loads the deck with cards
 {
 	srand(static_cast<unsigned int>(time(0)));
 	for (auto f : Card::suits)
@@ -20,7 +25,7 @@ Deck::~Deck()
 
 
 
-const bool Deck::isEmpty()
+const bool Deck::isEmpty() //check to see if the deck is empty
 {
 	if (_topOfDeck < 0)
 		return true;
@@ -31,10 +36,10 @@ const bool Deck::isEmpty()
 Cardptr Deck::draw()
 {
 	//
-	return _deck.at(_topOfDeck--);
+	return _deck.at(_topOfDeck--); //takes the card at the top of the deck
 }
 
-void Deck::shuffle()
+void Deck::shuffle() //shuffles the cards in a random order
 {
 	for (int i = 0; i < _deck.size(); ++i)
 	{

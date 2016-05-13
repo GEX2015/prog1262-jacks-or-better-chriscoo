@@ -1,3 +1,8 @@
+//
+//  Created by Chris Arsenault on 2016-05-13.
+//  Copyright © 2016 Chris Arsenault. All rights reserved.
+//
+
 #include "VideoPoker.h"
 
 
@@ -7,12 +12,11 @@ VideoPoker::VideoPoker()
 	loadPayouts();
 }
 
-
 VideoPoker::~VideoPoker()
 {
 }
 
-void VideoPoker::play()
+void VideoPoker::play() //game loop
 {
 
 	int choice;
@@ -32,6 +36,13 @@ void VideoPoker::play()
 
 		std::cin >> choice;
 
+		while (std::cin.fail())
+		{
+			std::cin.clear();
+			std::cin.ignore();
+			std::cin >> choice;
+		}
+		std::cin.ignore();
 		switch (choice) {
 		case 1:
 			payTable();
@@ -51,7 +62,7 @@ void VideoPoker::play()
 	system("cls");
 }
 
-void VideoPoker::payTable() const
+void VideoPoker::payTable() const //shows the payout table
 {
 
 	system("cls");
@@ -83,7 +94,7 @@ void VideoPoker::payTable() const
 
 }
 
-void VideoPoker::welcome() const
+void VideoPoker::welcome() const //instructions/welcome message
 {
 	std::cout << "*******************************************\n" <<
 		"**      Welcome to Jacks or better!      **\n" <<
@@ -108,24 +119,24 @@ void VideoPoker::game()
 	Hand hand;
 
 	deck.shuffle();
-	while (hand.sizeofHand() != 5)
+	while (hand.sizeofHand() != 5) //makes the hand
 		hand.addCard(deck.draw());
 
 	
-	drawNewCards(hand);
+	drawNewCards(hand); //chose cards to hold or draw loop
 
 
 		for (int i = 0; i != choices.size(); i++)
 		{
 			if (choices[i] != 0)
-				hand.redraw(choices[i], deck.draw());
+				hand.redraw(choices[i], deck.draw()); //draws all the chards the player chose
 		}
 
 	std::cout << hand << std::endl;
 
-	hand.checkHand();
+	hand.checkHand(); //checks to see if the player won anything
 
-	outcome(hand);
+	outcome(hand); //pays out the money if they did win
 
 
 
@@ -138,18 +149,18 @@ void VideoPoker::game()
 
 }
 
-void VideoPoker::loadPayouts()
+void VideoPoker::loadPayouts() //prepares our payout map for later comparison in outcome
 {
 
-	std::pair<std::string, int> pair("pair", 1);
-	std::pair<std::string, int> TwoPair("Two Pair", 2);
-	std::pair<std::string, int> threeoak("Three of a kind", 3);
-	std::pair<std::string, int> Straight("Straight", 4);
-	std::pair<std::string, int> Flush("Flush", 6);
-	std::pair<std::string, int> FullHouse("Full House", 9);
-	std::pair<std::string, int> fouroak("Four of a kind", 25);
-	std::pair<std::string, int> StraightFlush("Straight Flush", 50);
-	std::pair<std::string, int> RoyalFlush("Royal Flush", 250);
+	std::pair<payOuts, int> pair(payOuts::PAIR, 1);
+	std::pair<payOuts, int> TwoPair(payOuts::TWOPAIR, 2);
+	std::pair<payOuts, int> threeoak(payOuts::THREEOAKIND, 3);
+	std::pair<payOuts, int> Straight(payOuts::STRAIGHT, 4);
+	std::pair<payOuts, int> Flush(payOuts::FLUSH, 6);
+	std::pair<payOuts, int> FullHouse(payOuts::FULLHOUSE, 9);
+	std::pair<payOuts, int> fouroak(payOuts::FOUROFAKIND, 25);
+	std::pair<payOuts, int> StraightFlush(payOuts::STRAIGHTFLUSH, 50);
+	std::pair<payOuts, int> RoyalFlush(payOuts::ROYALFLUSH, 250);
 
 	_payout.insert(pair);
 	_payout.insert(TwoPair);
@@ -165,7 +176,7 @@ void VideoPoker::loadPayouts()
 
 void VideoPoker::drawNewCards(Hand hand)
 {
-	int choice = 1;
+	int choice = 1; //dummy value to get into the loop
 
 	while (choice != 0)
 	{
@@ -173,9 +184,13 @@ void VideoPoker::drawNewCards(Hand hand)
 		std::cout << "chose the card you would like to redraw (0 to continue): ";
 		std::cin >> choice;
 
-		if (choice < 0 || choice > hand.sizeofHand())
+
+		
+		if (choice < 0 || choice > hand.sizeofHand() || std::cin.fail()) //if its above or below the max number of cards in hand or if they don't input a number
 		{
 			std::cout << "enter a valid card choice" << std::endl;
+			std::cin.clear();
+			std::cin.ignore();
 			system("pause");
 		}
 		else if (choice != 0)
@@ -183,17 +198,27 @@ void VideoPoker::drawNewCards(Hand hand)
 			
 			hand.toggleDraw(choice);
 
+			int count = std::count(choices.begin(), choices.end(), choice); // checks to see if it's being toggled back off 
+
+			if (count > 0) //if it being toggled back to hold
+			{
+				for (int i = 0; i < choices.size(); i++)
+				{
+					if (choices[i] == choice)
+						choices.erase(choices.begin() + i);
+				}
+			}
+			else	//of it's not
+			choices.push_back(choice);
 		}
 
 
-		choices.push_back(choice);
+		
 		system("cls");
 	}
 
 	system("cls");
 }
-
-
 
 void VideoPoker::outcome(Hand hand)
 {
@@ -207,8 +232,37 @@ void VideoPoker::outcome(Hand hand)
 		{
 			while (p->first != h.first) //matches the pay with the right outcome
 				p++;
-
-			std::cout << h.first << "! You won " << p->second << " credits!" << std::endl;
+			switch ((int)h.first)
+			{
+			case 0:
+				std::cout << "pair! You won " << p->second << " credits!" << std::endl;
+				break;
+			case 1:
+				std::cout << "Two Pair! You won " << p->second << " credits!" << std::endl;
+				break;
+			case 2:
+				std::cout << "Three of a kind! You won " << p->second << " credits!" << std::endl;
+				break;
+			case 3:
+				std::cout << "Straight! You won " << p->second << " credits!" << std::endl;
+				break;
+			case 4:
+				std::cout << "Flush! You won " << p->second << " credits!" << std::endl;
+				break;
+			case 5:
+				std::cout << "Full house! You won " << p->second << " credits!" << std::endl;
+				break;
+			case 6:
+				std::cout << "Four of a kind! You won " << p->second << " credits!" << std::endl;
+				break;
+			case 7:
+				std::cout << "Straigh flush! You won " << p->second << " credits!" << std::endl;
+				break;
+			case 8:
+				std::cout << "ROYAL FLUSH! You won " << p->second << " credits!" << std::endl;
+				break;
+			}
+			//std::cout << h.first << "! You won " << p->second << " credits!" << std::endl;
 			credits = credits + p->second;
 			system("pause");
 			break;

@@ -1,7 +1,23 @@
+//
+//  Created by Chris Arsenault on 2016-05-13.
+//  Copyright © 2016 Chris Arsenault. All rights reserved.
+//
+
 #pragma once
 #include "Deck.h"
 #include <unordered_map>
 
+enum class payOuts { //enum of the possible hands to connect the correct hand to the payout
+	PAIR,
+	TWOPAIR,
+	THREEOAKIND,
+	STRAIGHT,
+	FLUSH,
+	FULLHOUSE,
+	FOUROFAKIND,
+	STRAIGHTFLUSH,
+	ROYALFLUSH
+};
 struct Card;
 using Cardptr = std::shared_ptr<Card>;
 class Hand
@@ -10,7 +26,7 @@ public:
 	Hand();
 	~Hand();
 	int sizeofHand() const { return _hand.size(); }
-	friend std::ostream& operator<<(std::ostream& os, const Hand& h)
+	friend std::ostream& operator<<(std::ostream& os, const Hand& h) //cout of hands
 	{
 		int i = 1;
 		int j = 0;
@@ -27,13 +43,19 @@ public:
 
 		return os;
 	}
-	void addCard(Cardptr c);
-	void clear();
-	void removeCard(int c);
-	void redraw(int i, Cardptr c);
+	void addCard(Cardptr c); //adds a card to your hand (c) is from the deck
+	void removeCard(int c); //removes a card form your hand at pos c and removed the sharedpointer form the hand
+	void redraw(int i, Cardptr c); //replace card I with card C (from deck)
 
-	void checkHand();
-
+	void checkHand(); //checks each of the possible wins and turns it to true if it's found (indexed by key)
+	
+	
+	std::unordered_map<payOuts, bool> _payoutHands;
+	bool isDraw(int idx); // do I draw card at idx
+	void toggleDraw(int idx);  //
+private:
+	void loadPayoutHands();
+	//possible hands
 	bool findPair();
 	bool findThreeOfAKind();
 	bool findFourOfAKind();
@@ -43,12 +65,7 @@ public:
 	bool findStraight();
 	bool findStraightFlush();
 	bool findRoyalFlush();
-	std::unordered_map<std::string, int> _payoutHands;
-	std::unordered_map<Cardptr, bool> _Redraw;
-	bool isDraw(int idx); // do I draw card at idx
-	void toggleDraw(int idx);  //fart
-private:
-	std::vector<Cardptr> _hand;
+	std::vector<Cardptr> _hand; //holds the hand
 	std::vector<bool> _draw; // true if card is to be drawn
 	
 	
